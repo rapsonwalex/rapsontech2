@@ -1,0 +1,36 @@
+version: '3'
+services:
+  db:
+    build:
+      context: ./mysql
+      args:
+        - MYSQL_DATABASE=${MYSQL_DATABASE}
+        - MYSQL_USER=${MYSQL_USER}
+        - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+        - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+    image: mysql
+    container_name: mysql_db
+    restart: always
+    ports:
+      - "${MYSQL_PORT}:3306"
+    volumes:
+      - laravel_app1_mysql_data:/var/lib/mysql
+
+  web:
+    image: laravel_app1_img
+    build: ./webapp
+    depends_on:
+      - db
+    container_name: laravel_app1_cont
+    restart: always
+    ports:
+      - "8091:80"
+    volumes:
+      - laravel_app1_web_data_article_file_uploads:/var/www/html/laravelapp/public/article_file_uploads
+      - laravel_app1_web_data_article_media:/var/www/html/laravelapp/public/article_media
+      - laravel_app1_web_data_article_images:/var/www/html/laravelapp/public/article_images
+volumes:
+  laravel_app1_mysql_data:
+  laravel_app1_web_data_article_file_uploads:
+  laravel_app1_web_data_article_media:
+  laravel_app1_web_data_article_images:
