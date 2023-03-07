@@ -24,7 +24,7 @@ services:
     container_name: laravel_app1_cont
     restart: always
     ports:
-      - "8091:80"
+      - "8099:80"
     volumes:
       - laravel_app1_web_data_article_file_uploads:/var/www/html/laravelapp/public/article_file_uploads
       - laravel_app1_web_data_article_media:/var/www/html/laravelapp/public/article_media
