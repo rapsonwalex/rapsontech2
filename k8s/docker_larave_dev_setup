@@ -1,0 +1,679 @@
+How to Install Laravel on Ubuntu 20.04 LTS
+source: https://linoxide.com/how-to-install-laravel-on-ubuntu-20-04/
+
+*Step 1: Install Apache web server
+
+apt-get update
+sudo apt install apache2
+sudo service apache2 start
+sudo service apache2 status
+
+*Step 2: Install PHP and additional PHP extensions
+
+$sudo apt install php curl git unzip libapache2-mod-php php-mbstring php-cli php-bcmath php-json php-xml php-zip php-pdo php-common php-tokenizer php-mysql php-pear php-fpm php-dev php-curl php-xmlrpc php-gd
+
+php -v
+
+Step 3: Create Database for Laravel Application
+sudo apt install mariadb-server
+
+$ sudo  mysql -u root -p
+
+////////////////////////////////////////////////////////////////////////
+mariadb solution to error
+if you are having this error:
+ERROR 2002 (HY000): Can't connect to local MySQL server through socket '/var/run/mysqld/mysqld.sock' (2)
+
+solution
+sudo service mysql start
+
+if another problem comes like:
+ * Starting MariaDB database server mysqld                               [fail] 
+
+//solution
+cd /var/lib/mysql
+ls
+rm -r *
+mysql_install_db --user=mysql --basedir=/usr --datadir=/var/lib/mysql
+sudo service mysql start
+
+////////////////////////////////////////////////////////////////////////////////////
+
+
+
+*Step 4: Install Composer
+
+apt-get update
+apt-get -y install curl
+$ curl -sS https://getcomposer.org/installer | php
+sudo mv composer.phar  /usr/local/bin/composer
+sudo chmod +x   /usr/local/bin/composer
+composer --version
+///////////////////////////////////////////////////////
+
+
+*Step 5: Install Laravel 8 on Ubuntu
+
+$ cd /var/www/html
+
+$ sudo composer create-project laravel/laravel laravelapp
+sudo chown -R www-data:www-data /var/www/html/laravelapp
+sudo chmod -R 775 /var/www/html/laravelapp/storage
+
+chown -R www-data:www-data /var/www/html
+chmod -R 775 /var/www/html
+sudo usermod -a -G www-data bello_dev_lab
+
+cd laravelapp
+php artisan
+
+///////////////////////////////////////////////////////////////////////
+
+*Step 6: Configure Apache to serve Laravel site
+
+Lastly, we need to set up the Apache webserver to host the Laravel site. For that to happen, we need to create a virtual host file.
+
+apt-get install nano
+$ sudo nano /etc/apache2/sites-available/laravel.conf
+
+Next, paste the content shown and replace the example.com ServerName directive with the FQDN or public IP of the server ( Or private IP in case the server is on a LAN network ).
+
+<VirtualHost *:80>
+ServerName example.com
+ServerAdmin admin@example.com
+DocumentRoot /var/www/html/laravelapp/public
+<Directory /var/www/html/laravelapp>
+AllowOverride All
+</Directory>
+ErrorLog ${APACHE_LOG_DIR}/error.log
+CustomLog ${APACHE_LOG_DIR}/access.log combined
+</VirtualHost>
+
+Save the changes and exit the file. Next, enable the Laravel site and Apache rewrite module using these two commands.
+
+$ sudo a2ensite laravel.conf
+
+$ sudo a2enmod rewrite
+
+To apply the changes, restart Apache.
+
+
+sudo service apache2 restart
+OR
+sudo service apache2 stop
+sudo service apache2 start
+///////////////////////////////////////////////////////////////////////////////////
+
+
+*Step 7: Access Laravel from a browser
+
+Finally, to access Laravel visit your server's FQDN or IP address. The default Laravel webpage will be displayed.
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+//??possible issues
+
+Why am I getting the Apache2 Ubuntu Default Page instead of my own index.html page?
+
+Solution
+sudo a2dissite 000-default.conf
+service apache2 reload
+
+source:https://askubuntu.com/questions/603451/why-am-i-getting-the-apache2-ubuntu-default-page-instead-of-my-own-index-html-pa
+
+
+/////////////DEPLOYING AN EXISTING LARAVEL APP/////////
+
+mkdir Downloads
+cd /Downloads
+apt-get install openssh-client
+//copy from my main machine to the docker ubuntu machine
+scp bello@172.20.20.1:/home/bello/Desktop/project-code.zip /Downloads/
+apt-get install unzip
+cd /var/www/html/
+mkdir forum_app
+unzip /Downloads/project-code.zip -d /var/www/html/forum_app/
+cd forum_app/
+ls -a
+cp .env.example .env
+ls -a
+apt-get install nano
+nano .env
+
+//edit your .env like this. save and generate key//
+DB_CONNECTION=mysql
+DB_HOST=localhost
+DB_PORT=3306
+DB_DATABASE=forum_db
+DB_USERNAME=root
+DB_PASSWORD=
+//////
+
+php artisan key:generate
+php artisan migrate
+php artisan serve 
+OR SPECIFY IP AND PORT
+php artisan serve --host=172.20.20.23 --port=8001
+
+////////////////////////////////////////////
+
+
+
+///HOW TO SSH TO LINUX SERVER WITHOUT PASSWORD////
+////////login to dev_lab and the following:////////
+apt-get update
+apt-get install sudo
+//create user with sudo privilage
+adduser username eg: adduser bello_dev_lab
+usermod -aG sudo username  eg:  usermod -aG sudo bello_dev_lab
+//install ssh if no ssh on the syetem
+apt-get install ssh
+service ssh status
+service ssh start
+
+//login as bello_dev_lab
+
+#su bello_dev_lab
+:/$ cd
+:~$
+Generate a Public/Private Keypair
+ssh-keygen
+//enter
+//leave password blank
+la
+ls .ssh
+//You should see the following output:
+id_rsa  id_rsa.pub  known_hosts
+
+Upload Your Public Key to Remote Linux Server
+ssh-copy-id remote-user@server-ip
+
+//eg. ssh-copy-id bello_prd_server@172.20.20.23
+//Enter the remote user’s password.
+
+
+use this to remove the key if there is error like "Host key verification failed" 
+//*ssh-keygen -R 172.20.20.23
+
+//The public key will be stored in the .ssh/authorized_keys file under the remote user’s home directory. Now SSH into the remote server.
+
+//Test if you can ssh to production_server without password
+ssh bello_prd_server@172.20.20.23
+
+///////////////////////////////////////////////////////////
+///HOW TO ENABLE SUDO WITHOUT PASSWORD////////
+//use to edit the visudo file
+sudo visudo
+
+change the %sudo part as shown below
+# Allow members of group sudo to execute any command
+%sudo   ALL=(ALL) NOPASSWD: ALL
+
+/////////////////////////////////////////////
+
+///setting up Gitlab ///
+use portainer to pull your gitlab
+
+//console to the container and reset the admin password using the below command
+
+gitlab-rake "gitlab:password:reset"
+
+//////////////////////////////////////
+
+//////how to add ssh key to gitlab///////
+
+generate ssh key from the system eg: generate ssh key through the bello_dev_lab account
+copy the ssh key using cat .ssh/id_rsa.pub
+
+copy the output  and go the your gitlab
+
+clik on edit profile and click SSH Keys
+
+paste the copies content into the key box. edit title (optional)
+click add key
+
+
+
+
+//////////////////LOGIN CREDENTIALS//////////////////////////
+gitlab username:root password: Password@123
+gitlab username:bello password: Password@123
+gitlab username:gitlab-jenkins password: Password@123
+jenkins: username:bello password: Password@123
+username:bello_prd_server password: Password@123
+username:bello_dev_lab password: Password@123
+
+Your new personal access token
+eh5Kc_gGArDze935Jh8w
+
+
+
+//////////////////COMMON VOLUME SAMPLE AND LOCATIONS IN DOCKER CONTAINER 
+
+you can use "whereis apache2"  "whereis mysql" for exmple to find the location of apache2 in
+ order to save the installation and config
+ 
+ 
+live_production_server_usr_sbin		/usr/sbin
+live_production_server_usr_lib		/use/lib
+live_production_server_etc	        	/etc
+live_production_server_usr_share		/usr/share
+live_production_server_var			/var
+live_production_server_usr_bin		/usr/bin
+live_production_server_usr_local_bin		/usr/local/bin
+live_production_server_home			/home
+
+Dev_Laptop
+
+my_ubuntu_lab_usr_sbin				/usr/sbin
+my_ubuntu_lab_usr_lib				/use/lib
+my_ubuntu_lab_etc				/etc
+my_ubuntu_lab_usr_share			/usr/share
+my_ubuntu_lab_var				/var
+my_ubuntu_lab_usr_bin				/usr/bin
+my_ubuntu_lab_usr_local_bin			/usr/local/bin
+my_ubuntu_lab_home      			/home
+
+
+
+////////////Pushing Codes To Remote Repository//////////////
+
+*make sure you generate ssh key add key to gitlab. see how to do that above
+
+git --version //to check if git is installed
+sudo apt update
+sudo apt install git //to install git
+
+//cd existing laravel project 
+*make sure you login as the user that whose ssh key was added to the gitlab. if ok you should see welcome to Gitlab @username
+
+ssh -T git@172.20.20.20 //to verify  that your SSH key was added corretly 
+
+git config --global user.name "Bello Adewale" //to set Git global setup
+git config --global user.email "belloadewalea@gmail.com" //to set Git global setup
+
+git remote -v  //to check settings
+git init 	//to initialise the git
+
+//to add origin
+sudo git remote add origin git@172.20.20.20:bello/forum.git 
+//*to remove origin
+*sudo git remote rm origin
+
+sudo git add .
+sudo git commit -m "Initial commit"
+sudo git push -u origin master
+
+
+
+
+////////Disabling GitLab CICD Feature///////////////
+
+login to gitlab
+click on settings
+locate CI/CD of pipeline
+check the disable
+click save changes
+
+
+//////////ON PRODUCTION SERVER////
+
+install sudo
+creaate user
+add user sudo group
+install mysql
+//ceate db
+create user and grant privilages
+
+*make sure you  generate ssh key add key to gitlab. see how to do that above
+*make sure you login as the user that whose ssh key was added to the gitlab 
+
+sudo chown -R www-data:www-data /var/www/html
+sudo chmod -R 775 /var/www/html
+sudo usermod -a -G www-data bello_prd_server
+
+///////////see exMPLE /////////
+    1  su bello_prd_server
+    2  ssh-keygen 
+    3  cd
+    4  cat .ssh/id_rsa.pub 
+    5  cd /var/www/html/
+   17  sudo chown -R www-data:www-data /var/www/html
+   18  sudo chmod -R 775 /var/www/html
+   19  sudo usermod -a -G www-data bello_prd_server
+   22  git config --global user.name "Bello Adewale" 
+   23  git config --global user.email "belloadewalea@gmail.com"
+   24  cd /var/www/html/
+   25  git clone git@172.20.20.20:bello/forum.git
+
+
+how to remove apache from ubuntu
+
+31  apt-get purge apache2 apache2-utils apache2-bin apache2.2-common
+   32  apt-get autoremove
+   33  which apache2
+   
+   
+nginx showing omnly the default page issue:
+solution
+	ln -s /etc/nginx/sites-available/laravelapp.conf /etc/nginx/sites-enabled
+NOTE: nginx will only work with the server name or ip specified in the .conf file else othe ip accessing the verser that is not specified will be showing the default nginx page   
+
+How To Fix “502 Bad Gateway” Error In Nginx 
+make sure the php7.2-fpm is running (very important)
+source:https://linuxhostsupport.com/blog/how-to-fix-502-bad-gateway-error-in-nginx/
+   
+   service php7.4-fpm status
+   service php7.4-fpm start
+   
+nginx - set multiple server_name with ssl-support.
+make sure the server_name in .conf file looks like this:
+	server_name 172.20.20.25 localhost;
+
+
+
+//SETTING UP THE PRODUCTION SERVER. THE COMMANDS////////////
+
+apt update
+sudo apt-get install nano
+adduser bello_prd_server
+usermod -aG sudo bello_prd_server
+sudo visudo
+//change the %sudo part as shown below
+//# Allow members of group sudo to execute any command
+//%sudo   ALL=(ALL) NOPASSWD: ALL
+su bello_prd_server
+apt install nginx
+apt install php curl git unzip libapache2-mod-php php-mbstring php-cli php-bcmath php-json php-xml php-zip php-pdo php-common php-tokenizer php-mysql php-pear php-fpm php-dev php-curl php-xmlrpc php-gd
+service apache2 stop
+apt-get purge apache2 apache2-utils apache2-bin apache2.2-common
+apt-get autoremove
+which apache2
+service apache2 status
+service nginx reload
+service php7.4-fpm status
+service php7.4-fpm start
+service php7.4-fpm status
+apt install mariadb-server
+//configure db and db user
+cd /
+apt-get -y install curl
+mkdir Downloads
+cd Downloads
+curl -sS https://getcomposer.org/installer | php
+mv composer.phar  /usr/local/bin/composer
+chmod +x   /usr/local/bin/composer
+
+cd
+ssh-keygen 
+cat .ssh/id_rsa.pub 
+cd /
+chown -R www-data:www-data /var/www/html
+chmod -R 775 /var/www/html
+sudo usermod -a -G www-data bello_prd_server
+//WARNING WARNING WARNING// PLEASE LOG OUT OF THE CONSOLE AND LOGIN BACK FOR THIS CHANGES TO TAKE EFFECT ELSE GITLAB CLONE WILL BE AN ISSUE
+
+cd /var/www/html/
+git clone git@172.20.20.20:bello/forum.git
+nano /etc/nginx/sites-available/forum.conf //see sample config file below
+ln -s /etc/nginx/sites-available/forum.conf /etc/nginx/sites-enabled/
+service nginx stop
+service nginx start
+
+create myql db and db user. //how below
+ 
+cd /var/www/html/forum/ 
+composer update
+cp .env.example .env
+//edit .env accordingly. see sample above
+nano .env
+php artisan key:generate
+sudo chown -R www-data:www-data /var/www/html/laravelapp
+sudo chmod -R 775 /var/www/html/laravelapp/storage
+
+//run db migration
+php artisan migrate
+
+///////////////////////////////////////////////////
+
+
+
+
+////////////////MARIADB DATABASE AND USER CREATION/////////////////////////////////////////
+Once logged in create the database, database user, and grant all privileges to the database user.
+
+CREATE DATABASE forum_db;
+
+SELECT User, Host, Password FROM mysql.user;
+
+CREATE USER 'forum_db_user'@'localhost' IDENTIFIED BY 'password';
+
+GRANT ALL ON forum_db.* TO 'forum_db_user'@'localhost';
+
+FLUSH PRIVILEGES;
+
+QUIT;
+
+////////////////////////////////////////////////
+
+
+
+//////////////SAMPLE CONFIG FILE/////////////////////////////////
+server {
+    #listen 80;
+    #server_name localhost;
+    #server_name 172.20.20.25;
+    listen 80;
+    listen [::]:80;
+#    server_name localhost;
+    server_name 172.20.20.25 localhost;
+   # replace forum with you code folder in case its not named forum
+    root /var/www/html/forum/public;
+
+    add_header X-Frame-Options "SAMEORIGIN";
+    add_header X-XSS-Protection "1; mode=block";
+    add_header X-Content-Type-Options "nosniff";
+
+    index index.html index.htm index.php;
+
+    charset utf-8;
+
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    location = /favicon.ico { access_log off; log_not_found off; }
+    location = /robots.txt  { access_log off; log_not_found off; }
+
+    error_page 404 /index.php;
+
+    location ~ \.php$ {
+        fastcgi_pass unix:/var/run/php/php7.4-fpm.sock;
+        fastcgi_index index.php;
+        fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
+        include fastcgi_params;
+    }
+
+    location ~ /\.(?!well-known).* {
+        deny all;
+    }
+}
+
+
+
+
+
+
+//////////////////
+/////////////
+
+////////////USE YOUR PERSONAL SYSTEM SFTP TO CONNECT TO THE UBUNTU DEV AND PRODSUCTION SERVER CODE USING VSCODE
+   86  sudo addgroup sftp
+   87  sudo usermod -a -G sftp bello_dev_lab
+   94  sudo service ssh stop
+   95  sudo service ssh start
+   
+   /var/www/html/forum/public;
+   
+   SFTP: Download Project
+   
+   //HOW to use sftp
+   sudo apt install ssh
+   make sure that the user can modify the content of the diretory you want to pull
+   
+   //to connect sftp to vscod
+   install the SFTP extension
+   
+   go to your pc and create a drectory to want to pull to
+   open the directory with vscode
+   press ctr+shift+p 
+   click SFTP:config
+   a sftp.json file will be created.
+   edit the file accordingly
+   
+   {
+    "name": "Forum_app_on_dev",
+    "host": "172.20.20.240",
+    "protocol": "sftp",
+    "port": 22,
+    "username": "bello_dev_lab",
+    "remotePath": "/var/www/html/forum_app",
+    "uploadOnSave": true
+}
+
+    
+1. Save and close the sftp.json file.
+2. Ctrl+Shift+P on Windows/Linux or Cmd+Shift+P on Mac open command palette.
+3. Type "sftp" and you'll now see a number of other comands.
+4. A good one to start with if you want to start with a remote folder is SFTP: Download Project. This will download the directory shown in the remotePath setting in sftp.json to your local open directory.
+5. Done - you can now edit locally and after each save it will upload to your remote file.
+Enjoy !
+
+
+//////////////////////////////////////
+//check the permission in a folder
+ls -l /var/www/html/
+//check the users in a group
+getent group www-data
+
+
+
+////ON MY PERSONAL SYSTEM////////
+git status
+git add .
+git status
+git commit -m "about us page added remotely"
+
+///////ON MY DEV LAB/////
+git status
+git add .
+git status
+git commit -m "about us page added remotely"
+git push origin master
+
+
+//////ON THE PRODUCTION SERVER. TO PULL THE CHANGES////////////
+git fetch --all
+git reset --hard origin/master
+git pull origin master
+composer install
+php artisan cache:clear
+php artisan config:cache
+
+
+//////STARTING THE PRODUCTION SERVER///
+service nginx start
+service mysql start
+service php7.4-fpm start
+service ssh start
+
+
+//////STARTING DEV LAB///
+service apache2 start
+service mysql start
+service ssh start
+
+
+//////TO ENTER ROOT ENVIRONMENT ON JENKINS DOCKER///////
+//on your system run
+docker exec -it -u root jenkins /bin/bash
+
+//now you can install anything
+apt-get update
+apt install php php-mysql php-zip php-gd php-mbstring php-curl php-xml php-bcmath php-sqlite3
+
+
+
+/////////ADDING WEBHOOK TO TRIGER AUTO PUSH ON COMMIT///////////
+get url from jenkins and genertae Secret token, copy the below info to gitlab and test
+ 
+ url: http://172.20.20.21:8080/project/forum
+ 
+ Secret token: fea6630fb0768ecb6a5e79e9e4efd882
+ 
+ ////if this error comes up 
+ //"gitlab Import url is blocked: "Requests to the local network are not allowed"
+ 
+ //login to gitlab as admin
+ //click on settinfgs=>network
+ //look for "Outbound requests "
+ //and check 
+ "Allow requests to the local network from web hooks and services
+  Allow requests to the local network from system hooks "
+  
+  save changes and try to add the url and the Secret token again
+  
+  
+  
+  
+  ////////////////////////////////////////////////
+staging_server_usr_sbin		/usr/sbin
+staging_server_usr_lib			/use/lib
+staging_server_etc	        	/etc
+staging_server_usr_share		/usr/share
+staging_server_var			/var
+staging_server_usr_bin			/usr/bin
+staging_server_usr_local_bin		/usr/local/bin
+staging_server_home			/home
+
+
+sudo cp -a /var/lib/docker/volumes/live_production_server_etc/_data/. /var/lib/docker/volumes/staging_server_etc/_data
+sudo cp -a /var/lib/docker/volumes/live_production_server_usr_bin/_data/. /var/lib/docker/volumes/staging_server_usr_bin/_data
+sudo cp -a /var/lib/docker/volumes/live_production_server_usr_lib/_data/. /var/lib/docker/volumes/staging_server_usr_lib/_data
+sudo cp -a /var/lib/docker/volumes/live_production_server_usr_local_bin/_data/. /var/lib/docker/volumes/staging_server_usr_local_bin/_data
+sudo cp -a /var/lib/docker/volumes/live_production_server_usr_sbin/_data/. /var/lib/docker/volumes/staging_server_usr_sbin/_data
+sudo cp -a /var/lib/docker/volumes/live_production_server_usr_share/_data/. /var/lib/docker/volumes/staging_server_usr_share/_data
+sudo cp -a /var/lib/docker/volumes/live_production_server_var/_data/. /var/lib/docker/volumes/staging_server_var/_data
+
+
+
+
+////////after recreating the docker image with the volume, the home directoy /home/username might be missing for the existing user. you either fix the problem or create a new user and do the following below://////////////
+
+//i created a new user
+
+adduser test1
+usermod -a -G www-data test1
+usermod -aG sudo test1
+groups test1
+ssh-keygen
+cat .ssh/id_rsa.pub 
+//copy the out of cat to gitlab ssh
+
+//then to go jenkins shell
+ssh test1@172.20.20.22
+exit
+ssh-copy-id test1@172.20.20.22
+
+//modify your Jenkins file in your code accordinly
+
+
+
+/////////USING ANOTHER BRANCH IN GITLAB//
+create a new branch called dev. a clone of the master branch
+
+now the developer can push to this branch and requet git marge to the master
+
+//how to use the branch
+git status
+git checkout -b dev
+git branch
