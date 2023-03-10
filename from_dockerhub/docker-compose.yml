@@ -1,0 +1,17 @@
+version: '3'
+services:
+  db:
+    image: rapsonwalex/rapsontech2db
+    container_name: rapsontech2db
+    restart: always
+    ports:
+      - "3309:3306"
+
+  web:
+    image: rapsonwalex/rapsontech2
+    depends_on:
+      - db
+    container_name: rapsontech2
+    restart: always
+    ports:
+      - "8066:80"

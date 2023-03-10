@@ -1,0 +1,81 @@
+docker tag rapsontech2 rapsonwalex/rapsontech2
+docker tag rapsontech2db rapsonwalex/rapsontech2db
+
+docker push rapsonwalex/rapsontech2
+docker push rapsonwalex/rapsontech2db
+
+
+docker run -ti \
+-p 8077:80 \
+rapsonwalex/rapsontech2
+
+
+docker create --name myNginx -p 80:80 -d nginx:alpine
+
+docker run --name qqqq ubuntu sleep 60
+
+docker run -ti \
+--name mysql_db \
+-p 3307:3306 \
+rapsonwalex/rapsontech2_db
+
+
+kubectl run rapsontech2 \
+--restart=Never \
+--image=rapsonwalex/rapsontech2 \
+--port=80 \
+
+kubectl run rapsontech2db \
+--restart=Never \
+--image=rapsonwalex/rapsontech2db \
+--port=3306 \
+
+
+kubectl expose pods rapsontech2 --type=NodePort --port=80
+service "rapsontech2" exposed
+
+
+minikube service rapsontech2
+
+kubectl expose pods rapsontech2db --type=NodePort --port=3306
+service "rapsontech2db" exposed
+
+
+minikube service rapsontech
+minikube service rapsontech2db
+
+/////////////////////////////////////////////////////
+kubectl delete pod rapsontech2
+docker tag rapsontech2 rapsonwalex/rapsontech2
+docker push rapsonwalex/rapsontech2
+kubectl run rapsontech2   --restart=Never   --image=rapsonwalex/rapsontech2   --port=80 \
+kubectl get pods
+kubectl delete pod rapsontech2db
+docker tag rapsontech2db rapsonwalex/rapsontech2db
+docker push rapsonwalex/rapsontech2db
+kubectl run rapsontech2db --restart=Never --image=rapsonwalex/rapsontech2db --port=3306 \
+kubectl get pods
+kubectl expose pods rapsontech2 --type=NodePort --port=80
+service "rapsontech2" exposed
+minikube service rapsontech2
+kubectl expose pods rapsontech2db --type=NodePort --port=3306
+service "rapsontech2db" exposed
+minikube service rapsontech2db
+/////////////////////////////////////////////////////////////////
+kubectl delete pod rapsontech2
+kubectl delete pod rapsontech2db
+
+
+/////////
+1998  minikube addons enable ingress
+2010  kubectl apply -f deployment.yml
+2003  kubectl get svc
+2009  kubectl get pods
+2011  kubectl describe ing rapsontech2-ingress
+1999  kubectl get nodes -o wide
+2000  kubectl get pods
+2001  kubectl get svc -n ingress-nginx
+2002  kubectl get deploy -n ingress-nginx
+2014  kubectl delete deployment rapsontech2
+2015  kubectl delete deployment rapsontech2db
+2016  kubectl delete ing rapsontech2-ingress

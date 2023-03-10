@@ -54,7 +54,7 @@ RUN chmod +x   /usr/local/bin/composer
 
 #COPY source_code/. /var/www/html/
 RUN mkdir -p /var/www/html/laravelapp
-WORKDIR /var/www/html
+WORKDIR /var/www/html/laravelapp
 COPY source_code/. /var/www/html/laravelapp/
 COPY .env /var/www/html/laravelapp/
 
