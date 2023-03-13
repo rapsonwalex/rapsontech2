@@ -79,3 +79,296 @@ kubectl delete pod rapsontech2db
 2014  kubectl delete deployment rapsontech2
 2015  kubectl delete deployment rapsontech2db
 2016  kubectl delete ing rapsontech2-ingress
+
+
+//////////////////////////////////////////////////
+kubectl scale --replicas=3 deployment/rapsontech2
+deployment "rapsontech2" scaled
+
+
+service "rapsontech2db-6bb99dd5cb-qfxvm" exposed
+
+minikube service rapsontech2db-6bb99dd5cb-qfxvm
+//////////////////////////////////////////
+
+1999  minikube delete
+2000  minikube start
+2001  minikube addons enable ingress
+2002  kubectl get pods -n ingress-nginx
+2003  kubectl create deployment web --image=gcr.io/google-samples/hello-app:1.0
+2004  kubectl expose deployment web --type=NodePort --port=8080
+2005  kubectl get service web
+2006  minikube service web --url
+2007  kubectl apply -f https://k8s.io/examples/service/networking/example-ingress.yaml
+2008  kubectl get ingress
+2009  kubectl create deployment web2 --image=gcr.io/google-samples/hello-app:2.0
+2010  kubectl expose deployment web2 --port=8080 --type=NodePort
+2011  history
+///////////////////////////////////////////////////////////////////////////////
+
+
+////THIS IS GOOD///
+kubectl create deployment rapsontech2 --image=rapsonwalex/rapsontech2
+kubectl expose deployment rapsontech2 --type=NodePort --port=80
+kubectl get service rapsontech2
+minikube service rapsontech2 --url
+kubectl apply -f ingres.yml
+kubectl get ingress
+
+
+kubectl create deployment rapsontech2db --image=rapsonwalex/rapsontech2db
+kubectl expose deployment rapsontech2db --type=NodePort --port=3306
+kubectl get service rapsontech2db
+
+kubectl scale --replicas=3 deployment/rapsontech2
+deployment "rapsontech2" scaled
+
+/////////////////////////////////////////
+
+service "rapsontech2db" exposed
+1992  kubectl get ingress
+1994  minikube service rapsontech2 --url
+1995  kubectl apply -f ingres.yml
+1997  kubectl apply -f ingress.yml
+1998  kubectl create deployment rapsontech2db --image=rapsonwalex/rapsontech2db
+1999  kubectl get pods
+2000  minikube service rapsontech2 --url
+2001  kubectl describe ing rapsontech2-ingress
+2002  kubectl get deployment
+2004  deployment "rapsontech2" scaled
+2005  kubectl get deployment
+2006  kubectl get pods
+
+/////////////////////////////
+
+1980  kubectl apply -f ingress.yml
+1981  kubectl create deployment rapsontech2db --image=rapsonwalex/rapsontech2db
+1982  kubectl get pods
+1983  minikube service rapsontech2 --url
+1984  kubectl describe ing rapsontech2-ingress
+1985  kubectl get deployment
+1986  deployment "rapsontech2" scaled
+1987  kubectl get deployment
+1988  kubectl get pods
+
+
+/////////////////////////////////////
+1994  kubectl delete deployment rapsontech2
+1995  kubectl delete deployment rapsontech2db
+1996  kubectl get svc
+1997  kubectl delete svc rapsontech2
+1998  kubectl delete svc rapsontech2db
+1999  kubectl get ing
+2001  kubectl delete ing rapsontech2-ingress
+
+////////////////////////////////
+https://learnk8s.io/blog/kubernetes-deploy-laravel-the-easy-way
+https://kubernetes.io/docs/tasks/access-application-cluster/ingress-minikube/
+
+https://kubernetes.io/docs/tutorials/stateless-application/guestbook/
+
+/////////////////////////////////////////
+kubectl apply -f https://k8s.io/examples/application/guestbook/redis-leader-deployment.yaml
+kubectl apply -f https://k8s.io/examples/application/guestbook/redis-leader-service.yaml
+kubectl apply -f https://k8s.io/examples/application/guestbook/redis-follower-deployment.yaml
+kubectl apply -f https://k8s.io/examples/application/guestbook/redis-follower-service.yaml
+kubectl apply -f https://k8s.io/examples/application/guestbook/frontend-deployment.yaml
+kubectl apply -f https://k8s.io/examples/application/guestbook/frontend-service.yaml
+/////////////////////////////
+
+
+https://kubernetes.io/docs/tutorials/stateful-application/mysql-wordpress-persistent-volume/
+https://madewithlove.com/blog/software-engineering/kubernetes-101-the-basics/
+
+
+//////////////////////////////////////////////////
+1890  minikube start
+1891  kubectl get nodes
+1892  kubectl get pods --all-namespaces
+1893  kubectl get namespace
+1894  kubectl get nodes -o=wide
+1895  kubectl get pods
+1896  docker version
+1897  kubectl version -o=json
+1899  clear
+1902  kubectl create deployment --image nginxdemos/hello web1
+1903  kubectl get deployment
+1904  kubectl get pods
+1905  kubectl scale deployment --replicas 20 web1
+1906  kubectl get pods -w
+1907  kubectl get pods
+1908  kubectl get deployments
+1909  kubectl expose deployment web1 --port=80 --type=LoadBalancer
+1910  kubectl get service
+1911  minikube service web1
+1912  kubectl get deployment
+1913  kubectl delete deployment web1
+1914  kubectl get service
+1916  kubectl delete service
+1919  kubectl apply -f https://k8s.io/examples/application/guestbook/redis-leader-deployment.yaml
+1920  kubectl apply -f https://k8s.io/examples/application/guestbook/redis-leader-service.yaml
+1921  kubectl apply -f https://k8s.io/examples/application/guestbook/redis-follower-deployment.yaml
+1922  kubectl apply -f https://k8s.io/examples/application/guestbook/redis-follower-service.yaml
+1923  kubectl apply -f https://k8s.io/examples/application/guestbook/frontend-deployment.yaml
+1924  kubectl apply -f https://k8s.io/examples/application/guestbook/frontend-service.yaml
+1925  kubectl get deployment
+1926  kubectl get deployment -w
+1927  kubectl get deployment
+1928  kubectl get service
+1929  minikube service frontend
+1930  kubectl get pods
+1931  minikube service frontend
+1932  kubectl get svc
+1933  kubectl get service frontend
+1934  kubectl port-forward svc/frontend 8081:80
+1935  kubectl delete deployment -l app=redis
+1936  kubectl delete service -l app=redis
+1937  kubectl delete deployment -l app=guestbook
+1938  kubectl get deployment
+1939  kubectl delete deployment -l app=frontend
+1940  kubectl get deployment
+1941  kubectl delete deployment frontend
+1942  kubectl get service
+1943  kubectl delete service frontend
+1944  kubectl get pods
+
+////////////////////////////////////////////////////
+
+
+
+
+
+Dj!ps5pgx@LFa9RP3y
+
+//////google search/////
+kubernetes laravel important persistent volumes
+
+
+////////////////////////////////
+2002  kubectl apply -k ./
+2005  minikube service wordpress --url
+2006  minikube service wordpress
+
+
+///////////////monitoring////////////////
+alias k=kubectl
+alias kp="kubectl get pods"
+
+kubectl get pods -h
+kubectl get pods -w
+
+kubectl get pods -o=wide
+
+
+1985  kubectl get pods -o=wide
+1986  kubectl get pods -h
+1987  kubectl get pods -w
+1988  kubectl api-resources
+1989  kubectl get deployments
+1990  kubectl get deployments -o=wide
+1991  kubectl describe pods
+1992  kubectl get pods
+1993  kubectl describe pods wordpress-7fdfc976b9-zfzrv
+1994  kubectl describe deployment
+1995  kubectl get pods
+1996  kubectl logs wordpress-7fdfc976b9-zfzrv
+1998  kubectl logs -h
+2000  kubectl logs wordpress-7fdfc976b9-zfzrv --tail=-1
+
+///////////////////scalling/////////////////////
+//to scale up
+kubectl scale deploy web1 --replicas=10
+kubectl get deploy
+// to sacle down
+kubectl scale deploy web1 --replicas=2
+
+/////////////////SERVICES/////////////////////
+//get services//
+kubectl get svc
+//expose the deployment to the network
+kubectl expose deployment web1 --port=80 --type=LoadBalancer
+//create a service with a YAML
+kubectl apply -f <service.yaml>
+
+kubectl expose deployment web1 --port=80 --type=LoadBalancer
+
+2002  kubectl create deployment --image nginxdemos/hello web1
+2003  kubectl get deploy
+2004  kubectl get deploy -w
+2005  kubectl scale deploy web1 --replicas=2
+2006  kubectl get deploy -w
+2007  kubectl get svc
+2008  kubectl expose deployment web1 --port=80 --type=LoadBalancer
+2009  kubectl get svc
+2010  minikube service web1
+//////////////////////////////////////////
+
+
+//////////////////////STORAGE////////////
+//Get Persistent volume
+kubectl get pv
+//get persistent volum claims
+kubectl get pvc
+//describe pv
+kubectl describe pv <pv-name>
+//describe pvc
+kubectl describe pvc <pvc-name>
+
+2012  kubectl get pv
+2013  kubectl get pvc
+2014  kubectl describe pv pvc-417e19e1-e413-4ede-a1a7-daaa3fb784a3
+2015  kubectl describe pvc mysql-pv-claim
+2016  kubectl describe pv pvc-417e19e1-e413-4ede-a1a7-daaa3fb784a3
+
+///////////////////////////////////
+
+// Get deployments
+kubectl get deploy
+
+// Set the new image to be deployed
+kubectl set image deployments/<deployment-name> <container=new-image>
+
+// Check rollout history
+kubectl rollout history deploy
+
+// Check rollout status
+kubectl rollout status deploy/<deployment-name>
+
+// Undo rollout / rollback
+kubectl rollout undo deploy/<deployment-name>
+
+
+kubectl set image deploy/wordpress wordpress=wp5
+2029  kubectl get pods
+2030  kubectl get pods -w
+2032  kubectl describe pod wordpress-f64955695-qpkqm
+2033  kubectl get pods
+2034  kubectl rollout undo deploy/wordpress
+2035  kubectl get pods
+2036  kubectl get pods -w
+2037  kubectl get pods
+2038  kubectl rollout history deploy
+2040  kubectl rollout status deploy/wordpress
+2041  kubectl set image deploy/wordpress wordpress=wp5
+2042  kubectl rollout status deploy/wordpress
+2043  kubectl rollout undo deploy/wordpress
+2044  kubectl rollout status deploy/wordpress
+2045  kubectl get pods
+2046  kubectl get deployments
+
+
+//////////////////////////////////////
+// Get namespaces
+kubectl get namespace
+
+// Get pods in a namespace
+kubectl get pods --namespace=kube-system
+
+// Set your default namespace
+kubectl config set-context --current  --namespace=<new-namespace>
+
+// Check to see what your default namespace is
+kubectl config view | grep namespace
+
+////////////////////////////////////////
+007 Updating applications - commands.Updating applications - commands
