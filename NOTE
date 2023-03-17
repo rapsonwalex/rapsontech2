@@ -83,7 +83,6 @@ kubectl delete pod rapsontech2db
 
 //////////////////////////////////////////////////
 kubectl scale --replicas=3 deployment/rapsontech2
-deployment "rapsontech2" scaled
 
 
 service "rapsontech2db-6bb99dd5cb-qfxvm" exposed
@@ -121,7 +120,7 @@ kubectl expose deployment rapsontech2db --type=NodePort --port=3306
 kubectl get service rapsontech2db
 
 kubectl scale --replicas=3 deployment/rapsontech2
-deployment "rapsontech2" scaled
+
 
 /////////////////////////////////////////
 
@@ -135,7 +134,6 @@ service "rapsontech2db" exposed
 2000  minikube service rapsontech2 --url
 2001  kubectl describe ing rapsontech2-ingress
 2002  kubectl get deployment
-2004  deployment "rapsontech2" scaled
 2005  kubectl get deployment
 2006  kubectl get pods
 
@@ -147,7 +145,6 @@ service "rapsontech2db" exposed
 1983  minikube service rapsontech2 --url
 1984  kubectl describe ing rapsontech2-ingress
 1985  kubectl get deployment
-1986  deployment "rapsontech2" scaled
 1987  kubectl get deployment
 1988  kubectl get pods
 
@@ -370,5 +367,117 @@ kubectl config set-context --current  --namespace=<new-namespace>
 // Check to see what your default namespace is
 kubectl config view | grep namespace
 
-////////////////////////////////////////
+////////////////////shell access////////////////////
 007 Updating applications - commands.Updating applications - commands
+
+
+kubctl get pods
+kubectl exec -it <pod-name> -- /bin/bash
+OR
+kubectl exec -it <pod-name> -- /bin/sh
+
+kubectl exec wordpress-7fdfc976b9-f9sp6  -- /etc/host
+////////////////////managing resources//////////////////////////////
+
+minikube addons list
+
+minikube addons enable metrics-server
+
+minikube addons list
+
+kubectl top node
+kubectl top pod
+kubectl describe pod <pod-name>
+
+
+////////////////////////////////
+//how to create a new yaml file from and existing pod
+kubectl get pod wordpress-7fdfc976b9-f9sp6 -o yaml > resource-test.yaml
+
+//edit the file
+nano resource-test.yaml
+
+//create new pod from the yaml file
+kubectl apply -f resource-test.yaml
+
+//////////pod troubleshooting/////////////////
+kubectl get pods
+
+kubectl describe pods
+
+kubectl logs <pod name> <container name>
+
+kubectl exec -it <podname> -- /bin/bash
+
+kubectl create -f <deployment-name.yaml>
+
+//how to edit a live pod
+kubectl edit pod  wordpress-mysql-6987d65455-vrvlh
+
+
+////////////////////troubleshooting node/////////////////////////////////////////////
+
+kubectl get nodes
+
+# cat out log files:
+
+# API Server responsible for serving the API
+cat /var/log/kube-apiserver.log
+
+# Scheduler responsible for making scheduling decisions
+cat /var/log/kube-scheduler.log 
+
+# Controller that manages replication controllers
+cat /var/log/kube-controller-manager.log
+
+# cat out log files:
+
+# Kubelet responsible for running containers on the node
+cat /var/log/kubelet.log
+
+#  Kube Proxy responsible for service load balancing
+cat /var/log/kube-proxy.log
+
+# cat out log files:
+
+# Kubelet responsible for running containers on the node
+cat /var/log/kubelet.log
+
+#  Kube Proxy responsible for service load balancing
+cat /var/log/kube-proxy.log
+
+Run the node problem detector - https://github.com/kubernetes/node-problem-detector
+
+minikube status
+minikube ip
+minikube logs
+minikube ssh
+minikube version
+
+kubectl cluster-info
+kubectl cluster-info dump
+
+minikube delete
+brew cask reinstall minikube
+
+minikube start
+
+
+
+/////////////COPY THE LARAVEL STORAGE FOLDER TO THE POD
+kubectl cp /path/to/your_folder name-of-your-pod:/path/to/destination_folder
+
+kubectl cp /home/bello/Documents/my_docker_hub/waytodevops_laravel_app1/rapsontech2/Dockerized_app/webapp/source_code/storage rapsontech2-5cbcfd965c-pl2cn:/var/www/html/laravelapp
+
+
+///////////////ENTER THE POD SHELL////////////
+kubectl exec -it rapsontech2-5cbcfd965c-pl2cn -- /bin/bash
+
+
+//////run////
+ls storage
+//////grant permision to the folders
+chmod -R o+rw /var/www/html/laravelapp/storage
+chmod -R o+rw /var/www/html/laravelapp/bootstrap
+chmod -R o+rw /var/www/html/laravelapp/public
+exit

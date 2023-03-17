@@ -1,0 +1,59 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: rapsontech2
+  labels:
+    app: rapsontech2
+spec:
+  ports:
+    - port: 80
+  selector:
+    app: rapsontech2
+    tier: frontend
+  type: LoadBalancer
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: rapsontech2-pv-claim
+  labels:
+    app: rapsontech2
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rapsontech2
+  labels:
+    app: rapsontech2
+spec:
+  selector:
+    matchLabels:
+      app: rapsontech2
+      tier: frontend
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: rapsontech2
+        tier: frontend
+    spec:
+      containers:
+        - image: rapsonwalex/rapsontech2
+          name: rapsontech2
+          ports:
+            - containerPort: 80
+              name: rapsontech2
+          volumeMounts:
+            - name: rapsontech2-persistent-storage
+              mountPath: /var/www/html
+      volumes:
+        - name: rapsontech2-persistent-storage
+          persistentVolumeClaim:
+            claimName: rapsontech2-pv-claim

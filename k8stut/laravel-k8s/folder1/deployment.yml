@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rapsontech2
+spec:
+  selector:
+    matchLabels:
+      app: rapsontech2
+  template:
+    metadata:
+      labels:
+        app: rapsontech2
+    spec:
+      containers:
+        - name: rapsontech2
+          image: rapsonwalex/rapsontech2
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+          ports:
+            - containerPort: 80

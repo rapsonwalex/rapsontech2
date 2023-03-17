@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rapsontech2
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: rapsontech2
+  template:
+    metadata:
+      labels:
+        app: rapsontech2
+    spec:
+      containers:
+        - name: rapsontech2
+          image: rapsonwalex/rapsontech2
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - mountPath: /var/www/html/laravelapp/storage
+              name: rapsontech2-persistent-storage
+
+            - name: rapsontech2-persistent-article-file-uploads
+              mountPath: /var/www/html/laravelapp/public/article_file_uploads
+
+            - name: rapsontech2-persistent-article-media
+              mountPath: /var/www/html/laravelapp/public/article_media
+
+            - name: rapsontech2-persistent-article-images
+              mountPath: /var/www/html/laravelapp/public/article_images
+      volumes:
+        - name: rapsontech2-persistent-storage
+          persistentVolumeClaim:
+            claimName: rapsontech2pvc-storage
+
+        - name: rapsontech2-persistent-article-file-uploads
+          persistentVolumeClaim:
+            claimName: rapsontech2pvc-file-uploads
+
+        - name: rapsontech2-persistent-article-media
+          persistentVolumeClaim:
+            claimName: rapsontech2pvc-article-media
+
+        - name: rapsontech2-persistent-article-images
+          persistentVolumeClaim:
+            claimName: rapsontech2pvc-article-images

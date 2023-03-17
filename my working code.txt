@@ -1,0 +1,102 @@
+///METHOD 1. simple deployment
+kubectl create deployment rapsontech2 --image=rapsonwalex/rapsontech2
+kubectl expose deployment rapsontech2 --type=NodePort --port=80
+
+kubectl create deployment rapsontech2db --image =rapsonwalex/rapsontech2db
+kubectl expose deployment rapsontech2db --type =NodePort --port=3306
+
+kubectl scale --replicas=3 deployment/rapsontech2
+
+kubectl get deploy
+kubectl get pods
+kubectl get svc
+
+minikube service rapsontech2
+or
+minikube service rapsontech2 --url
+
+ kubectl delete deploy rapsontech2
+ kubectl delete deploy rapsontech2db
+ kubectl delete svc rapsontech2
+ kubectl delete svc rapsontech2db
+
+
+//////////////////////////////////////////////////////////////////////
+///METHOD 2. YAML deployment laravel-k8s folder1
+kubectl apply -f deployment.yml
+kubectl apply -f deploymentdb.yml
+
+kubectl expose deployment rapsontech2 --type =NodePort --port=80
+kubectl expose deployment rapsontech2db --type=NodePort --port=3306
+
+kubectl scale --replicas=3 deployment/rapsontech2
+
+kubectl get pods -w
+//////////////////////////////////////////////////////////////////////
+///METHOD 3. YAML deployment adding service.yaml file laravel-k8s folder2
+kubectl apply -f deployment.yml
+kubectl apply -f deploymentdb.yml
+kubectl apply -f service.yml
+kubectl apply -f servicedb.yml
+
+kubectl scale --replicas=3 deployment/rapsontech2
+
+kubectl get pods -w
+/////////////////////////////////////////////////////////////////
+///METHOD 4. YAML deployment adding pvc.yaml file laravel-k8s folder3
+kubectl apply -f pvc-article-file-uploads.yml
+kubectl apply -f pvc-article-images.yml
+kubectl apply -f pvc-article-media.yml
+kubectl apply -f pvc-storage.yml
+kubectl apply -f pvcdb.yml
+kubectl apply -f deployment.yml
+kubectl apply -f deploymentdb.yml
+kubectl apply -f service.yml
+kubectl apply -f servicedb.yml
+
+
+ kubectl delete deploy rapsontech2
+ kubectl delete deploy rapsontech2db
+ kubectl delete svc rapsontech2
+ kubectl delete svc rapsontech2db
+ kubectl delete pvc rapsontech2pvc-storage
+ kubectl delete pvc rapsontech2dbpvc
+ kubectl delete pvc rapsontech2pvc-article-images
+ kubectl delete pvc rapsontech2pvc-file-uploads
+ kubectl delete pvc rapsontech2pvc-article-media
+
+kubectl get deploy
+kubectl get pods
+kubectl get svc
+kubectl get pvc
+//////////////////////////
+
+How to copy files and directories from and to a running Kubernetes Pod?
+
+https://www.digitalocean.com/community/questions/how-to-copy-files-and-directories-from-and-to-a-running-kubernetes-pod
+
+
+kubectl scale --replicas=3 deployment/rapsontech2
+
+kubectl get pods -w
+//////////////////////////////////////////
+
+INITITIAL SETUP ONLY
+
+/////////////COPY THE LARAVEL STORAGE FOLDER TO THE POD
+kubectl cp /path/to/your_folder name-of-your-pod:/path/to/destination_folder
+
+kubectl cp /home/bello/Documents/my_docker_hub/waytodevops_laravel_app1/rapsontech2/Dockerized_app/webapp/source_code/storage rapsontech2-5cbcfd965c-pl2cn:/var/www/html/laravelapp
+
+
+///////////////ENTER THE POD SHELL////////////
+kubectl exec -it rapsontech2-5cbcfd965c-pl2cn -- /bin/bash
+
+
+//////run////
+ls storage
+//////grant permision to the folders
+chmod -R o+rw /var/www/html/laravelapp/storage
+chmod -R o+rw /var/www/html/laravelapp/bootstrap
+chmod -R o+rw /var/www/html/laravelapp/public
+exit

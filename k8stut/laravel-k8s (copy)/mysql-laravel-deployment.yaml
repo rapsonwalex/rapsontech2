@@ -1,0 +1,59 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: rapsontech2db
+  labels:
+    app: rapsontech2db
+spec:
+  ports:
+    - port: 3306
+  selector:
+    app: rapsontech2db
+    tier: mysql
+  clusterIP: None
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: rapsontech2db-pv-claim
+  labels:
+    app: rapsontech2db
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rapsontech2db-mysql
+  labels:
+    app: rapsontech2db
+spec:
+  selector:
+    matchLabels:
+      app: rapsontech2db
+      tier: mysql
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: rapsontech2db
+        tier: mysql
+    spec:
+      containers:
+        - image: rapsonwalex/rapsontech2db
+          name: rapsontech2db
+          ports:
+            - containerPort: 3306
+              name: mysql
+          volumeMounts:
+            - name: rapsontech2db-persistent-storage
+              mountPath: /var/lib/mysql
+      volumes:
+        - name: rapsontech2db-persistent-storage
+          persistentVolumeClaim:
+            claimName: rapsontech2db-pv-claim
